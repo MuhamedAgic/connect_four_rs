@@ -63,8 +63,7 @@ impl Game {
                 TurnOutcome::NewGame => {
                     self.reset_game();
                     player_index = 0; // start with player 1 again
-                },
-                _ => return Err(format!("Unknown turn outcome {:?}", turn_outcome))
+                }
             }
             println!("{}", &self.board);
         }
