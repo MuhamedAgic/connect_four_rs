@@ -65,7 +65,7 @@ fn has_won_vertically(player: &Player, board: &Board) -> bool {
 
 
 fn has_won_diagonally(player: &Player, board: &Board) -> bool {
-    true
+    false
 }
 
 
