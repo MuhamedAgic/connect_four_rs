@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use std::fmt;
 use crate::player::Player;
 use crate::player::PlayerType;
@@ -35,13 +36,13 @@ impl Board {
     pub fn is_full(&self) -> bool {
         // data[0] is top row
         self.data[0]
-            .iter()
+            .par_iter()
             .all(|player| *player != Player::default())
     }
     
     pub fn is_column_full(&self, col: u8) -> bool {
         self.data
-            .iter()
+            .par_iter()
             .all(|row| row[col as usize] != Player::default())
     }
     
@@ -63,7 +64,7 @@ impl Board {
 
     pub fn clear(&mut self) {
         self.data
-            .iter_mut()
+            .par_iter_mut()
             .for_each(|row| row
                 .iter_mut()
                 .for_each(|player| {
@@ -132,20 +133,41 @@ impl Board {
         println!("{}", b);
         b
     }
-    
-    
-    
-    
+
+    pub fn generate_diagonal_south_east_win(nr_connected_components: u8) -> Board {
+        let mut b = Board::new();
+        let mut p1 = Player::default();
+        p1.marker = 'x';
+        for i in 0..nr_connected_components {
+            b.data[i as usize][i as usize] = p1;
+        }
+        println!("Generated vertically won board");
+        println!("{}", b);
+        b
+    }
+
+    pub fn generate_diagonal_north_east_win(nr_connected_components: u8) -> Board {
+        let mut b = Board::new();
+        let mut p1 = Player::default();
+        p1.marker = 'x';
+        for i in 0..nr_connected_components {
+            b.data[ROWS as usize - i as usize - 1][i as usize] = p1;
+        }
+        println!("Generated vertically won board");
+        println!("{}", b);
+        b
+    }
 }
 
 
 impl fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, " ")?;
         for i in 0..COLS {
             write!(f, " {} ", i)?;
         }
         writeln!(f)?;
-
+        write!(f, " ")?;
         for i in 0..COLS {
             write!(f, " - ")?;
         }
@@ -159,7 +181,7 @@ impl fmt::Display for Board {
             write!(f, "|")?;
             writeln!(f)?;
         }
-        
+        write!(f, " ")?;
         for i in 0..COLS {
             write!(f, " - ")?;
         }
@@ -167,8 +189,6 @@ impl fmt::Display for Board {
         Ok(())
     }
 }
-
-
 
 
 #[cfg(test)]

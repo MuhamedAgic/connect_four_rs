@@ -1,16 +1,8 @@
+use rayon::prelude::*;
 use crate::player::{Player, PlayerType};
 use crate::board::Board;
 use crate::utils::{cli_confirms, get_cli_input};
 use crate::win_condition_strategy::WinConditionStrategy;
-
-
-#[derive(Debug)]
-pub struct Game {
-    board: Board,
-    players: Vec<Player>,
-    win_condition_strategies: Vec<WinConditionStrategy>,
-}
-
 
 #[derive(Debug, Eq, PartialEq)]
 enum TurnOutcome {
@@ -18,6 +10,13 @@ enum TurnOutcome {
     ExitGame,
     NewGame,
     InvalidMove
+}
+
+#[derive(Debug)]
+pub struct Game {
+    board: Board,
+    players: Vec<Player>,
+    win_condition_strategies: Vec<WinConditionStrategy>,
 }
 
 
@@ -113,14 +112,14 @@ impl Game {
     
     pub fn has_won(&self, player: &Player) -> bool {
         self.win_condition_strategies
-            .iter()
+            .par_iter()
             .any(|strategy| strategy.has_won(player, &self.board))
     }
     
     
     pub fn has_winner(&self) -> bool {
         self.players
-            .iter()
+            .par_iter()
             .any(|player| self.has_won(player))
     }
 
