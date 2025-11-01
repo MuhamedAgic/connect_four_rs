@@ -30,6 +30,37 @@ impl Game {
             win_condition_strategies
         }
     }
+    
+    fn create_simulated_game() -> Self {
+        Game::new(
+            Board::new(),
+            Game::generate_simulation_players(),
+            Game::setup_win_condition_strategies()
+        )
+    }
+
+    pub fn generate_players() -> Vec<Player> {
+        vec![
+            Player::new(1, "henk-one", PlayerType::HUMAN, 'x'),
+            Player::new(2, "henk-two", PlayerType::COMPUTER, 'o'),
+        ]
+    }
+
+    pub fn generate_simulation_players() -> Vec<Player> {
+        vec![
+            Player::new(1, "henk-one", PlayerType::COMPUTER, 'x'),
+            Player::new(2, "henk-two", PlayerType::COMPUTER, 'o'),
+        ]
+    }
+    
+    pub fn setup_win_condition_strategies() -> Vec<WinConditionStrategy> {
+        vec![
+            WinConditionStrategy::HorizontalWinStrategy,
+            WinConditionStrategy::VerticalWinStrategy,
+            WinConditionStrategy::DiagonalWinStrategy,
+        ]
+    }
+    
 
     pub fn run(&mut self) ->Result<(), String> {
         println!("Welcome to connect four!");
@@ -110,36 +141,57 @@ impl Game {
     }
 
     
-    pub fn has_won(&self, player: &Player) -> bool {
+    fn has_won(&self, player: &Player) -> bool {
         self.win_condition_strategies
             .par_iter()
             .any(|strategy| strategy.has_won(player, &self.board))
     }
     
     
-    pub fn has_winner(&self) -> bool {
+    fn has_winner(&self) -> bool {
         self.players
             .par_iter()
             .any(|player| self.has_won(player))
     }
-
-
-    pub fn generate_players() -> Vec<Player> {
-        vec![
-            Player::new(1, "henk", PlayerType::HUMAN, 'x'),
-            Player::new(2, "henk", PlayerType::COMPUTER, 'o'),
-            // Player::new(3, "henk", PlayerType::COMPUTER, 'v'),
-        ]
-    }
-
     
-    pub fn setup_win_condition_strategies() -> Vec<WinConditionStrategy> {
-        vec![
-            WinConditionStrategy::HorizontalWinStrategy,
-            WinConditionStrategy::VerticalWinStrategy,
-            WinConditionStrategy::DiagonalWinStrategy,
-        ]
-    }
 }
 
+
+#[cfg(test)]
+mod game_tests {
+    use super::*;
+
+    #[test]
+    fn full_board_has_no_winner() {
+        let mut game = Game::create_simulated_game();
+        game.board = Board::generate_full_board();
+        assert_eq!(game.has_winner(), false);
+    }
+    
+    #[test]
+    fn game_has_winner() {
+        let mut game = Game::create_simulated_game();
+        
+        let boards_with_winner = vec![
+            Board::generate_horizontal_win(&game.players[0], 4),
+            Board::generate_vertical_win(&game.players[0], 4),
+            Board::generate_diagonal_north_east_win(&game.players[0], 4),
+            Board::generate_diagonal_south_east_win(&game.players[0], 4)
+        ];
+    
+        for board in boards_with_winner {
+            game.board = board;
+            assert_eq!(game.has_winner(), true);
+        }
+    }
+
+    #[test]
+    fn legal_move_continues_game() {
+        let mut game = Game::create_simulated_game();
+        let player = &game.players[0].clone();
+        let turn_outcome = &game.process_turn(player);
+        assert_eq!(*turn_outcome, Ok(TurnOutcome::ContinueGame));
+    }
+    
+}
 

@@ -1,11 +1,11 @@
-use crate::board::Board;
-
 mod win_condition_strategy;
 mod player;
 mod game;
 mod board;
 mod utils;
 
+
+use crate::board::Board;
 use game::Game;
 
 

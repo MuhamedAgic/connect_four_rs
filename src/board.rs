@@ -109,12 +109,10 @@ impl Board {
     }
 
     
-    pub fn generate_horizontal_win(nr_connected_components: u8) -> Board {
+    pub fn generate_horizontal_win(player: &Player, nr_connected_components: u8) -> Board {
         let mut b = Board::new();
-        let mut p1 = Player::default();
-        p1.marker = 'x';
         for i in 0..nr_connected_components {
-            b.data[ROWS as usize - 1][i as usize] = p1;
+            b.data[ROWS as usize - 1][i as usize] = *player;
         }
         println!("Generated horizontally won board");
         println!("{}", b);
@@ -122,36 +120,30 @@ impl Board {
     }
 
     
-    pub fn generate_vertical_win(nr_connected_components: u8) -> Board {
+    pub fn generate_vertical_win(player: &Player, nr_connected_components: u8) -> Board {
         let mut b = Board::new();
-        let mut p1 = Player::default();
-        p1.marker = 'x';
         for i in 0..nr_connected_components {
-            b.data[i as usize][COLS as usize - 1] = p1;
+            b.data[i as usize][COLS as usize - 1] = *player;
         }
         println!("Generated vertically won board");
         println!("{}", b);
         b
     }
 
-    pub fn generate_diagonal_south_east_win(nr_connected_components: u8) -> Board {
+    pub fn generate_diagonal_south_east_win(player: &Player, nr_connected_components: u8) -> Board {
         let mut b = Board::new();
-        let mut p1 = Player::default();
-        p1.marker = 'x';
         for i in 0..nr_connected_components {
-            b.data[i as usize][i as usize] = p1;
+            b.data[i as usize][i as usize] = *player;
         }
         println!("Generated vertically won board");
         println!("{}", b);
         b
     }
 
-    pub fn generate_diagonal_north_east_win(nr_connected_components: u8) -> Board {
+    pub fn generate_diagonal_north_east_win(player: &Player, nr_connected_components: u8) -> Board {
         let mut b = Board::new();
-        let mut p1 = Player::default();
-        p1.marker = 'x';
         for i in 0..nr_connected_components {
-            b.data[ROWS as usize - i as usize - 1][i as usize] = p1;
+            b.data[ROWS as usize - i as usize - 1][i as usize] = *player;
         }
         println!("Generated vertically won board");
         println!("{}", b);
